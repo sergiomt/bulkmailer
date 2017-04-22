@@ -1,0 +1,10 @@
+/target/
+.cache
+.cache-main
+.cache-test
+.cache-tests
+.classpath
+.project
+.settings
+.scala_dependencies
+

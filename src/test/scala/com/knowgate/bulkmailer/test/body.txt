@@ -1,0 +1,2 @@
+This is a test of an e-mail sent with BulkMailer.
+Link to: http://www.knowgate.com

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<DATASTRUCT>
+  <ROWSETS>
+    <INIT></INIT>
+    <ROWSET>
+      <ACTION>
+        <FROM>k_workareas</FROM>
+        <TO>k_workareas</TO>
+        <WHERE>gu_workarea='{#SourceWorkAreaId}'</WHERE>
+        <FROM_PK>gu_workarea</FROM_PK>
+        <TO_PK>gu_workarea</TO_PK>
+      </ACTION>
+      <MAPPINGS>
+        <MAPPING>{#TargetDomainId},id_domain</MAPPING>
+        <MAPPING>'{#TargetWorkAreaId}',gu_workarea</MAPPING>
+        <MAPPING>'{#TargetWorkAreaNm}',nm_workarea</MAPPING>
+        <MAPPING>'{#OwnerId}',gu_owner</MAPPING>
+        <MAPPING>NOW(),dt_created</MAPPING>
+      </MAPPINGS>
+    </ROWSET>
+    <ROWSET>
+      <ACTION>
+        <FROM>k_x_app_workarea</FROM>
+        <TO>k_x_app_workarea</TO>
+        <WHERE>gu_workarea='{#SourceWorkAreaId}'</WHERE>
+        <FROM_PK>id_app,gu_workarea</FROM_PK>
+        <TO_PK>id_app,gu_workarea</TO_PK>
+      </ACTION>
+      <MAPPINGS>
+        <MAPPING>'{#TargetWorkAreaId}',gu_workarea</MAPPING>
+        <MAPPING>LOWER('{#TargetWorkAreaNm}'),path_files</MAPPING>
+        <MAPPING>NULL,gu_admins</MAPPING>
+        <MAPPING>NULL,gu_powusers</MAPPING>
+        <MAPPING>NULL,gu_guests</MAPPING>
+        <MAPPING>NULL,gu_other</MAPPING>
+      </MAPPINGS>
+    </ROWSET>
+    <ROWSET>
+      <ACTION>
+        <FROM>k_addresses_lookup</FROM>
+        <TO>k_addresses_lookup</TO>
+        <WHERE>gu_owner='{#SourceWorkAreaId}'</WHERE>
+        <FROM_PK>gu_owner,id_section,pg_lookup</FROM_PK>
+        <TO_PK>gu_owner,id_section,pg_lookup</TO_PK>
+      </ACTION>
+      <MAPPINGS>
+        <MAPPING>'{#TargetWorkAreaId}',gu_owner</MAPPING>
+      </MAPPINGS>
+    </ROWSET>
+    <ROWSET>
+      <ACTION>
+        <FROM>k_companies_lookup</FROM>
+        <TO>k_companies_lookup</TO>
+        <WHERE>gu_owner='{#SourceWorkAreaId}'</WHERE>
+        <FROM_PK>gu_owner,id_section,pg_lookup</FROM_PK>
+        <TO_PK>gu_owner,id_section,pg_lookup</TO_PK>
+      </ACTION>
+      <MAPPINGS>
+        <MAPPING>'{#TargetWorkAreaId}',gu_owner</MAPPING>
+      </MAPPINGS>
+    </ROWSET>
+    <ROWSET>
+      <ACTION>
+        <FROM>k_companies</FROM>
+        <TO>k_companies</TO>
+        <WHERE>gu_workarea='{#SourceWorkAreaId}'</WHERE>
+        <FROM_PK>gu_company</FROM_PK>
+        <TO_PK>gu_company</TO_PK>
+      </ACTION>
+      <MAPPINGS>
+      	<MAPPING TRANSFORM="NEWGUID">gu_company,gu_company</MAPPING>
+      	<MAPPING>'{#TargetWorkAreaId}',gu_workarea</MAPPING>
+        <MAPPING>NOW(),dt_created</MAPPING>
+        <MAPPING>NULL,dt_modified</MAPPING>
+      </MAPPINGS>
+    </ROWSET>
+    <ROWSET>
+      <ACTION>
+        <FROM>k_addresses </FROM>
+        <TO>k_addresses</TO>
+        <WHERE>gu_address IN (SELECT gu_address FROM k_x_company_addr WHERE gu_company IN (SELECT gu_company FROM k_companies WHERE gu_workarea='{#SourceWorkAreaId}'))</WHERE>
+        <FROM_PK>gu_address</FROM_PK>
+        <TO_PK>gu_address</TO_PK>
+      </ACTION>
+      <MAPPINGS>
+      	<MAPPING TRANSFORM="NEWGUID">gu_address,gu_address</MAPPING>
+      	<MAPPING>'{#TargetWorkAreaId}',gu_workarea</MAPPING>
+        <MAPPING>NOW(),dt_created</MAPPING>
+        <MAPPING>NULL,dt_modified</MAPPING>
+      </MAPPINGS>
+    </ROWSET>
+    <ROWSET>
+      <ACTION>
+        <FROM>k_x_company_addr</FROM>
+        <TO>k_x_company_addr</TO>
+        <WHERE>gu_company IN (SELECT gu_company from k_companies where gu_workarea='{#SourceWorkAreaId}')</WHERE>
+        <FROM_PK>gu_address,gu_company</FROM_PK>
+        <TO_PK>gu_address,gu_company</TO_PK>
+      </ACTION>
+      <MAPPINGS>
+      	<MAPPING TRANSFORM="REFER(k_companies.gu_company)">gu_company,gu_company</MAPPING>
+      	<MAPPING TRANSFORM="REFER(k_addresses.gu_address)">gu_address,gu_address</MAPPING>
+      </MAPPINGS>
+    </ROWSET>
+    <ROWSET>
+      <ACTION>
+        <FROM>k_contacts_lookup</FROM>
+        <TO>k_contacts_lookup</TO>
+        <WHERE>gu_owner='{#SourceWorkAreaId}'</WHERE>
+        <FROM_PK>gu_owner,id_section,pg_lookup</FROM_PK>
+        <TO_PK>gu_owner,id_section,pg_lookup</TO_PK>
+      </ACTION>
+      <MAPPINGS>
+      	<MAPPING>'{#TargetWorkAreaId}',gu_owner</MAPPING>
+      </MAPPINGS>
+    </ROWSET>
+    <ROWSET>
+      <ACTION>
+        <FROM>k_contacts</FROM>
+        <TO>k_contacts</TO>
+        <WHERE>gu_workarea='{#SourceWorkAreaId}'</WHERE>
+        <FROM_PK>gu_contact</FROM_PK>
+        <TO_PK>gu_contact</TO_PK>
+      </ACTION>
+      <MAPPINGS>
+      	<MAPPING TRANSFORM="NEWGUID">gu_contact,gu_contact</MAPPING>
+        <MAPPING>'{#TargetWorkAreaId}',gu_workarea</MAPPING>
+        <MAPPING TRANSFORM="REFER(k_companies.gu_company)">gu_company,gu_company</MAPPING>
+        <MAPPING>'{#OwnerId}',gu_writer </MAPPING>
+        <MAPPING>NOW(),dt_created</MAPPING>
+        <MAPPING>NULL,dt_modified</MAPPING>
+      </MAPPINGS>
+    </ROWSET>
+    <ROWSET>
+      <ACTION>
+        <FROM>k_addresses </FROM>
+        <TO>k_addresses</TO>
+        <WHERE>gu_address IN (SELECT gu_address FROM k_x_contact_addr WHERE gu_contact IN (SELECT gu_contact FROM k_contacts WHERE gu_workarea='{#SourceWorkAreaId}'))</WHERE>
+        <FROM_PK>gu_address</FROM_PK>
+        <TO_PK>gu_address</TO_PK>
+      </ACTION>
+      <MAPPINGS>
+      	<MAPPING TRANSFORM="NEWGUID">gu_address,gu_address</MAPPING>
+      	<MAPPING>'{#TargetWorkAreaId}',gu_workarea</MAPPING>
+        <MAPPING>NOW(),dt_created</MAPPING>
+        <MAPPING>NULL,dt_modified</MAPPING>
+      </MAPPINGS>
+    </ROWSET>
+    <ROWSET>
+      <ACTION>
+        <FROM>k_x_contact_addr</FROM>
+        <TO>k_x_contact_addr</TO>
+        <WHERE>gu_contact IN (SELECT gu_contact FROM k_contacts WHERE gu_workarea='{#SourceWorkAreaId}')</WHERE>
+        <FROM_PK>gu_address,gu_contact</FROM_PK>
+        <TO_PK>gu_address,gu_contact</TO_PK>
+      </ACTION>
+      <MAPPINGS>
+      	<MAPPING TRANSFORM="REFER(k_contacts.gu_contact)">gu_contact,gu_contact</MAPPING>
+      	<MAPPING TRANSFORM="REFER(k_addresses.gu_address)">gu_address,gu_address</MAPPING>
+      </MAPPINGS>
+    </ROWSET>
+    <ROWSET>
+      <ACTION>
+        <FROM>k_lists</FROM>
+        <TO>k_lists</TO>
+        <WHERE>gu_workarea='{#SourceWorkAreaId}'</WHERE>
+        <FROM_PK>gu_list</FROM_PK>
+        <TO_PK>gu_list</TO_PK>
+      </ACTION>
+      <MAPPINGS>
+      	<MAPPING TRANSFORM="NEWGUID">gu_list,gu_list</MAPPING>
+      	<MAPPING>'{#TargetWorkAreaId}',gu_workarea</MAPPING>
+      	<MAPPING TRANSFORM="REFER(k_queries.gu_query)">gu_query,gu_query</MAPPING>
+        <MAPPING>NOW(),dt_created</MAPPING>
+      </MAPPINGS>
+    </ROWSET>
+    <ROWSET>
+      <ACTION>
+        <FROM>k_microsites</FROM>
+        <TO>k_microsites</TO>
+        <WHERE>gu_workarea='{#SourceWorkAreaId}'</WHERE>
+        <FROM_PK>gu_microsite</FROM_PK>
+        <TO_PK>gu_microsite</TO_PK>
+      </ACTION>
+      <MAPPINGS>
+      	<MAPPING TRANSFORM="NEWGUID">gu_microsite,gu_microsite</MAPPING>
+      	<MAPPING>'{#TargetWorkAreaId}',gu_workarea</MAPPING>
+      </MAPPINGS>
+    </ROWSET>
+    <ROWSET>
+      <ACTION>
+        <FROM>k_pagesets</FROM>
+        <TO>k_pagesets</TO>
+        <WHERE>gu_workarea='{#SourceWorkAreaId}'</WHERE>
+        <FROM_PK>gu_pageset</FROM_PK>
+        <TO_PK>gu_pageset</TO_PK>
+      </ACTION>
+      <MAPPINGS>
+      	<MAPPING TRANSFORM="NEWGUID">gu_pageset,gu_pageset</MAPPING>
+      	<MAPPING>'{#TargetWorkAreaId}',gu_workarea</MAPPING>
+      </MAPPINGS>
+    </ROWSET>
+  </ROWSETS>
+</DATASTRUCT>
