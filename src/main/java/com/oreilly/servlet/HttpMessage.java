@@ -8,8 +8,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import com.knowgate.stringutils.Base64Encoder;
-
 /**
  * A class to simplify HTTP applet-server communication.  It abstracts
  * the communication into messages, which can be either GET or POST.
@@ -243,7 +241,7 @@ public class HttpMessage {
    * @param name the user password
    */
   public void setAuthorization(String name, String password) {
-    String authorization = Base64Encoder.encode(name + ":" + password);
+    String authorization = Base64.getEncoder().encodeToString((name + ":" + password).getBytes());
     setHeader("Authorization", "Basic " + authorization);
   }
 
