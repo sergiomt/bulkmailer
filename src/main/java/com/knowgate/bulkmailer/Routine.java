@@ -17,7 +17,7 @@ import java.util.Map;
 
 import javax.jdo.JDOException;
 
-import org.judal.storage.Record;
+import org.judal.storage.table.Record;
 
 public interface Routine {
 

@@ -20,7 +20,7 @@ import javax.jdo.JDOException;
 
 import javax.mail.Message.RecipientType;
 
-import org.judal.storage.Record;
+import org.judal.storage.table.Record;
 
 public interface Job extends Record,Routine,SumCounter {
 

@@ -37,6 +37,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
+import java.util.Base64;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -58,7 +59,6 @@ import org.htmlparser.visitors.NodeVisitor;
 
 import com.knowgate.debug.DebugFile;
 import com.knowgate.debug.StackTraceUtil;
-import com.knowgate.stringutils.Base64Encoder;
 
 /**
  * <p>Used to perform some maipulations in HTML source code for e-mails</p>
@@ -616,7 +616,7 @@ public class HtmlMimeBodyPart {
             	LinkTag lnk = (LinkTag) tag;
             	String sUrl = lnk.extractLink();
                 if(sUrl.startsWith("http://") || sUrl.startsWith("https://")) {
-                    lnk.setLink(sRedirectorUrl+URLEncoder.encode(Base64Encoder.encode(sUrl)));
+                    lnk.setLink(sRedirectorUrl+URLEncoder.encode(Base64.getEncoder().encodeToString(sUrl.getBytes())));
                 }
             }
         }

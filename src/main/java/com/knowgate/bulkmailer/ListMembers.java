@@ -12,7 +12,7 @@ package com.knowgate.bulkmailer;
  * KIND, either express or implied.
  */
 
-import org.judal.storage.Record;
+import org.judal.storage.table.Record;
 
 public interface ListMembers {
 

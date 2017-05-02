@@ -14,8 +14,7 @@ package com.knowgate.bulkmailer;
 
 import javax.jdo.JDOException;
 
-import org.judal.storage.Record;
-import org.judal.storage.TableDataSource;
+import org.judal.storage.table.Record;
 
 public interface MailerUser extends Record {
 
@@ -25,6 +24,6 @@ public interface MailerUser extends Record {
 	
 	String getNickname();
 
-	MailerUser[] forWorkArea(TableDataSource oDts, String sWrkAreaId) throws JDOException, NullPointerException, InstantiationException;
+	MailerUser[] forWorkArea(String sWrkAreaId) throws JDOException, NullPointerException, InstantiationException;
 
 }

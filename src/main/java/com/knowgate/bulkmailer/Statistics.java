@@ -24,7 +24,7 @@ import javax.jdo.datastore.JDOConnection;
 
 import com.knowgate.debug.StackTraceUtil;
 
-import org.judal.storage.TableDataSource;
+import org.judal.storage.table.TableDataSource;
 
 public abstract class Statistics {
 

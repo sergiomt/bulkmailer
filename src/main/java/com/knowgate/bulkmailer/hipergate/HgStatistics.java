@@ -26,7 +26,7 @@ import com.knowgate.bulkmailer.Statistics;
 import com.knowgate.bulkmailer.UserAgents;
 
 import org.judal.jdbc.jdc.JDCConnection;
-import org.judal.storage.TableDataSource;
+import org.judal.storage.table.TableDataSource;
 import org.judal.jdbc.RDBMS;
 
 public class HgStatistics extends Statistics {

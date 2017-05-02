@@ -15,7 +15,7 @@ package com.knowgate.bulkmailer;
 import java.io.PrintStream;
 import java.util.Map;
 
-import org.judal.storage.TableDataSource;
+import org.judal.storage.table.TableDataSource;
 
 public interface Factory {
 
@@ -59,4 +59,6 @@ public interface Factory {
 
   Statistics getStatistics(TableDataSource d, PrintStream p);
   
+  MailerUser[] getMailerUsersForWorkArea(TableDataSource d, String w);
+
 }

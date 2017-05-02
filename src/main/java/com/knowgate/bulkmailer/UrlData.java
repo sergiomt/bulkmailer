@@ -14,7 +14,7 @@ package com.knowgate.bulkmailer;
 
 import javax.jdo.JDOException;
 
-import org.judal.storage.Record;
+import org.judal.storage.table.Record;
 
 public interface UrlData extends Record {
 	

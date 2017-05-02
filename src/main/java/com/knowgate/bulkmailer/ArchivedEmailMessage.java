@@ -14,7 +14,7 @@ package com.knowgate.bulkmailer;
 
 import java.util.Date;
 
-import org.judal.storage.Record;
+import org.judal.storage.table.Record;
 
 public interface ArchivedEmailMessage extends Record {
 

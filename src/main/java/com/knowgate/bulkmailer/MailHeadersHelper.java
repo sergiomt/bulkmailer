@@ -29,7 +29,7 @@ import javax.mail.internet.InternetAddress;
 
 import com.knowgate.debug.DebugFile;
 import com.knowgate.debug.StackTraceUtil;
-import com.knowgate.io.MD5;
+import com.knowgate.encryption.MD5;
 import com.knowgate.stringutils.Html;
 import com.knowgate.stringutils.Str;
 
@@ -242,7 +242,7 @@ public class MailHeadersHelper extends DefaultHandler {
     MD5 oMd5 = new MD5();
     oMd5.Init();
     oMd5.Update(byArray);
-    sContentMD5 = oMd5.FinalHex();
+    sContentMD5 = oMd5.asHex();
     oMd5 = null;
     return sContentMD5;
   }

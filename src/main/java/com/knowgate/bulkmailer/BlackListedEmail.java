@@ -16,7 +16,7 @@ import java.util.Date;
 
 import javax.jdo.JDOException;
 
-import org.judal.storage.Record;
+import org.judal.storage.table.Record;
 
 public interface BlackListedEmail extends Record {
 

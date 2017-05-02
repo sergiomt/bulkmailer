@@ -15,7 +15,7 @@ package com.knowgate.bulkmailer;
 import java.io.File;
 import java.util.List;
 
-import org.judal.storage.Record;
+import org.judal.storage.table.Record;
 
 public interface MailMessage extends Record {
       
