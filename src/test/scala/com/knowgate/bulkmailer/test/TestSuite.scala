@@ -5,7 +5,7 @@ import java.util.HashMap
 import java.text.SimpleDateFormat
 
 import org.judal.storage.Engine
-import org.judal.storage.RecordManager
+import org.judal.storage.table.RecordManager
 
 import com.knowgate.bulkmailer.Using._
 import com.knowgate.bulkmailer.Factory

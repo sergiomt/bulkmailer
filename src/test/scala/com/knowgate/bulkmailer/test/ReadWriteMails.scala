@@ -5,7 +5,7 @@ import java.io.InputStream
 import java.io.FileOutputStream
 import java.io.ByteArrayOutputStream
 
-import org.judal.storage.Table
+import org.judal.storage.table.Table
 import com.knowgate.io.StreamPipe
 import com.knowgate.stringutils.Str
 

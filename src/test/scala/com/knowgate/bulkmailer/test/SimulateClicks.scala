@@ -3,9 +3,9 @@ package com.knowgate.bulkmailer.test
 import java.util.Random
 import java.util.HashMap
 
-import org.judal.storage.TableDataSource
-import org.judal.storage.Record
-import org.judal.storage.RecordSet
+import org.judal.storage.table.TableDataSource
+import org.judal.storage.table.Record
+import org.judal.storage.table.RecordSet
 
 import com.knowgate.stringutils.Uid
 import com.knowgate.bulkmailer.ClickThrough

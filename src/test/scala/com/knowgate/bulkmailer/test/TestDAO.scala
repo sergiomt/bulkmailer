@@ -11,9 +11,9 @@ import javax.cache.spi.CachingProvider
 
 import org.judal.jdbc.JDBCEngine
 
-import org.judal.storage.Record
+import org.judal.storage.table.Record
 import org.judal.storage.EngineFactory
-import org.judal.storage.RecordManager
+import org.judal.storage.table.RecordManager
 
 import org.judal.storage.Env
 
