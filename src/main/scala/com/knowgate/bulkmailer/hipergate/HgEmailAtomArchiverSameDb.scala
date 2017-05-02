@@ -13,7 +13,7 @@ import javax.jdo.JDOException
 import com.knowgate.debug.Chronometer
 
 import org.judal.storage.DataSource
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.TableDataSource
 
 import com.knowgate.bulkmailer.Archive
 import com.knowgate.bulkmailer.Close

@@ -4,7 +4,7 @@ import java.util.Date
 import java.text.ParseException;
 import java.text.SimpleDateFormat
 
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.TableDataSource
 import org.judal.storage.scala.ArrayRecord
 
 class HgAtomsByDay(dts: TableDataSource) extends ArrayRecord(dts,"k_jobs_atoms_by_day") {

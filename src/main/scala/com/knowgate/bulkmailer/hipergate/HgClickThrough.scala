@@ -4,7 +4,7 @@ import java.util.Map
 import java.util.Date
 
 import org.judal.storage.scala.ArrayRecord
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.TableDataSource
 
 import com.knowgate.bulkmailer.ClickThrough
 

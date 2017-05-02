@@ -7,7 +7,7 @@ import java.sql.PreparedStatement
 import org.judal.jdbc.jdc.JDCConnection
 import org.judal.jdbc.jdc.JDCConnectionPool
 
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.TableDataSource
 
 class SingleStatementConnectionHandler(val dts: TableDataSource, val sql: String) extends AutoCloseable {
     

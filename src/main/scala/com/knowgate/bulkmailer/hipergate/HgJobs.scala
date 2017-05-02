@@ -22,16 +22,16 @@ import com.knowgate.bulkmailer.EmailMessagesByDay
 import com.knowgate.bulkmailer.EmailMessagesByHour
 import com.knowgate.bulkmailer.EmailMessagesByAgent
 
-import org.judal.storage.Table
-import org.judal.storage.IndexableView
-import org.judal.storage.Record
-import org.judal.storage.RecordSet
+import org.judal.storage.table.Table
+import org.judal.storage.table.IndexableView
+import org.judal.storage.table.Record
+import org.judal.storage.table.RecordSet
 import org.judal.storage.StorageObjectFactory
-import org.judal.storage.RelationalView
-import org.judal.storage.RelationalDataSource
+import org.judal.storage.relational.RelationalView
+import org.judal.storage.relational.RelationalDataSource
 import org.judal.storage.scala.ArrayRecord
 
-import org.judal.storage.ColumnGroup
+import org.judal.storage.table.ColumnGroup
 
 import org.judal.storage.query.Term
 import org.judal.storage.query.Operator

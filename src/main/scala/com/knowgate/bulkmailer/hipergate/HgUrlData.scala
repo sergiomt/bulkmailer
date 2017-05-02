@@ -5,12 +5,12 @@ import java.util.AbstractMap.SimpleImmutableEntry
 import javax.jdo.JDOException
 import javax.jdo.JDOUserException
 
-import org.judal.storage.Record
-import org.judal.storage.RecordSet
-import org.judal.storage.Table
-import org.judal.storage.RelationalView
+import org.judal.storage.table.Record
+import org.judal.storage.table.RecordSet
+import org.judal.storage.table.Table
+import org.judal.storage.relational.RelationalView
 import org.judal.storage.DataSource
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.TableDataSource
 import org.judal.storage.scala.ArrayRecord
 import org.judal.storage.query.Operator
 import org.judal.storage.query.Connective

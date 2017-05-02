@@ -10,10 +10,10 @@ import com.sun.mail.smtp.SMTPMessage;
 
 import com.knowgate.debug.Chronometer
 
-import org.judal.storage.Table
-import org.judal.storage.Record
+import org.judal.storage.table.Table
+import org.judal.storage.table.Record
 import org.judal.storage.DataSource
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.TableDataSource
 import org.judal.storage.scala.ArrayRecord
 
 import com.knowgate.bulkmailer.Using._

@@ -4,9 +4,9 @@ import java.util.Map
 
 import com.knowgate.bulkmailer.WebBeacon
 
-import org.judal.storage.Record
+import org.judal.storage.table.Record
 import org.judal.storage.scala.ArrayRecord
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.TableDataSource
 
 class HgWebBeacon(dts: TableDataSource) extends ArrayRecord(dts, "k_job_atoms_tracking") with WebBeacon {
 

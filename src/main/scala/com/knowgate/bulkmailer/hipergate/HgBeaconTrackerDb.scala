@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue
 
 import javax.jdo.JDOException
 
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.TableDataSource
 
 import com.knowgate.bulkmailer.Log
 import com.knowgate.bulkmailer.Close

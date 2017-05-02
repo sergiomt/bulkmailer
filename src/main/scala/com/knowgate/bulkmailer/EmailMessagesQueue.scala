@@ -14,8 +14,8 @@ package com.knowgate.bulkmailer
 
 import javax.mail.Message.RecipientType
 
-import org.judal.storage.Table
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.Table
+import org.judal.storage.table.TableDataSource
 
 import com.knowgate.bulkmailer.hipergate.HgSingleEmailAtom
 

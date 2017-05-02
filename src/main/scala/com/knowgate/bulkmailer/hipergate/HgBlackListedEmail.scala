@@ -3,8 +3,8 @@ package com.knowgate.bulkmailer.hipergate
 import java.util.Map
 import java.util.Date
 
-import org.judal.storage.Table
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.Table
+import org.judal.storage.table.TableDataSource
 import org.judal.storage.scala.ArrayRecord
 
 import com.knowgate.bulkmailer.BlackListedEmail

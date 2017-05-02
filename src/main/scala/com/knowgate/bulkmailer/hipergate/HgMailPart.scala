@@ -7,9 +7,9 @@ import java.nio.file.Paths
 
 import javax.jdo.JDOException
 
-import org.judal.storage.Table
-import org.judal.storage.Record
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.Table
+import org.judal.storage.table.Record
+import org.judal.storage.table.TableDataSource
 import org.judal.storage.scala.ArrayRecord
 
 import com.knowgate.bulkmailer.Using._

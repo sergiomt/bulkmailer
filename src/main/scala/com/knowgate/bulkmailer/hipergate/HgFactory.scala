@@ -6,11 +6,11 @@ import java.util.Properties
 
 import javax.mail.Message.RecipientType
 
-import org.judal.storage.Table
+import org.judal.storage.table.Table
 import org.judal.storage.Engine
-import org.judal.storage.RecordSet
-import org.judal.storage.TableDataSource
-import org.judal.storage.RelationalDataSource
+import org.judal.storage.table.RecordSet
+import org.judal.storage.table.TableDataSource
+import org.judal.storage.relational.RelationalDataSource
 
 import com.knowgate.bulkmailer.Job
 import com.knowgate.bulkmailer.Jobs
@@ -136,4 +136,6 @@ object HgFactory extends Factory {
   
   override def newTotalAtomsByDay(dts: TableDataSource) = new HgTotalAtomsByDay(dts)
 
+  override def getMailerUsersForWorkArea(dts: TableDataSource, workareaId: String) = new HgMailerUser(dts).forWorkArea(workareaId)
+  
 }

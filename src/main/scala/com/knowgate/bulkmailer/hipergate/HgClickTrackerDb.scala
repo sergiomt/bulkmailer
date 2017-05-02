@@ -12,7 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue
 
 import javax.jdo.JDOException
 
-import org.judal.storage.RelationalDataSource
+import org.judal.storage.relational.RelationalDataSource
 
 import com.knowgate.bulkmailer.Log
 import com.knowgate.bulkmailer.Urls

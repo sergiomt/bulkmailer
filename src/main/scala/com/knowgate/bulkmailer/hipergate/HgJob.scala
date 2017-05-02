@@ -20,14 +20,14 @@ import javax.mail.Message.RecipientType
 import com.knowgate.stringutils.Str
 import com.knowgate.stringutils.Uid
 
-import org.judal.storage.Table
+import org.judal.storage.table.Table
 import org.judal.storage.Param
-import org.judal.storage.Record
+import org.judal.storage.table.Record
 import org.judal.storage.scala.ArrayRecord
-import org.judal.storage.RecordSet
-import org.judal.storage.ColumnGroup
+import org.judal.storage.table.RecordSet
+import org.judal.storage.table.ColumnGroup
 import org.judal.storage.DataSource
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.TableDataSource
 import org.judal.metadata.ColumnDef
 
 import org.judal.jdbc.JDBCRelationalTable
@@ -65,6 +65,10 @@ import scala.collection.JavaConversions.asScalaBuffer
 
 class HgJob(var dataSource: TableDataSource, props: Map[String,String], jid: String = Uid.createUniqueKey()) extends ArrayRecord(dataSource,"k_jobs") with Job {
   
+  def this (dataSource: TableDataSource, propsMap: java.util.Map[String,String], jid: String) {
+    this(dataSource, propsMap.asScala, jid)
+  }
+
   var atms : Array[SingleEmailAtom] = null
   var arch : List[Record] = null
   

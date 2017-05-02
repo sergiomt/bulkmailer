@@ -8,10 +8,10 @@ import javax.jdo.JDOUserException
 
 import javax.mail.Message.RecipientType
 
-import org.judal.storage.Table
-import org.judal.storage.Record
-import org.judal.storage.TableDataSource
-import org.judal.storage.RecordSet
+import org.judal.storage.table.Table
+import org.judal.storage.table.Record
+import org.judal.storage.table.TableDataSource
+import org.judal.storage.table.RecordSet
 import org.judal.storage.scala.ArrayRecord
 
 import com.knowgate.bulkmailer.WebBeacon

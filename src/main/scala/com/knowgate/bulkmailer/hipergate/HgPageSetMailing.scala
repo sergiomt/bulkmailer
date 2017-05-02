@@ -10,10 +10,10 @@ import com.knowgate.bulkmailer.MailingList
 import com.knowgate.bulkmailer.ClickThrough
 import com.knowgate.bulkmailer.RecipientsList
 
-import org.judal.storage.Table
-import org.judal.storage.Record
-import org.judal.storage.RecordSet
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.Table
+import org.judal.storage.table.Record
+import org.judal.storage.table.RecordSet
+import org.judal.storage.table.TableDataSource
 import org.judal.storage.scala.ArrayRecord
 
 import scala.collection.mutable.HashMap

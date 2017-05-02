@@ -27,12 +27,12 @@ import javax.cache.configuration.MutableConfiguration
 import javax.cache.spi.CachingProvider
 
 import org.judal.storage.Env
-import org.judal.storage.Table
-import org.judal.storage.Record
+import org.judal.storage.table.Table
+import org.judal.storage.table.Record
 import org.judal.storage.Engine
 import org.judal.storage.EngineFactory
-import org.judal.storage.RecordManager
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.RecordManager
+import org.judal.storage.table.TableDataSource
 
 import org.judal.ramqueue.RAMQueueProducer
 

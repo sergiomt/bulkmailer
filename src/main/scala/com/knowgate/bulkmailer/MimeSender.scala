@@ -33,8 +33,8 @@ import com.knowgate.debug.Chronometer
 
 import com.knowgate.debug.DebugFile
 
-import org.judal.storage.Table
-import org.judal.storage.Record
+import org.judal.storage.table.Table
+import org.judal.storage.table.Record
 import org.judal.storage.DataSource
 
 import com.knowgate.stringutils.Uid

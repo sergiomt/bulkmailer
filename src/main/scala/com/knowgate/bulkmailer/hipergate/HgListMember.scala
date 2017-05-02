@@ -1,6 +1,6 @@
 package com.knowgate.bulkmailer.hipergate
 
-import org.judal.storage.TableDataSource
+import org.judal.storage.table.TableDataSource
 import org.judal.storage.scala.ArrayRecord
 
 import com.knowgate.bulkmailer.ListMember
