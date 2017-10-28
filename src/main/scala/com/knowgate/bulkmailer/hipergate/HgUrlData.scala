@@ -5,16 +5,23 @@ import java.util.AbstractMap.SimpleImmutableEntry
 import javax.jdo.JDOException
 import javax.jdo.JDOUserException
 
+import org.judal.metadata.JoinType
+import org.judal.metadata.NameAlias.AS
+
+import org.judal.storage.Param
+import org.judal.storage.DataSource
 import org.judal.storage.table.Record
 import org.judal.storage.table.RecordSet
 import org.judal.storage.table.Table
-import org.judal.storage.relational.RelationalView
-import org.judal.storage.DataSource
+import org.judal.storage.table.ColumnGroup
 import org.judal.storage.table.TableDataSource
 import org.judal.storage.scala.ArrayRecord
 import org.judal.storage.query.Operator
 import org.judal.storage.query.Connective
+import org.judal.storage.relational.RelationalView
+
 import com.knowgate.stringutils.Uid
+import com.knowgate.tuples.Pair
 
 import com.knowgate.bulkmailer.UrlData
 import com.knowgate.bulkmailer.ClickThrough
@@ -58,22 +65,18 @@ class HgUrlData(dts: TableDataSource) extends ArrayRecord(dts,"k_urls") with Url
 	
   @throws(classOf[JDOException])
 	def clickThrough() : Array[ClickThrough] = {
-    var clt: Array[ClickThrough] = new Array[ClickThrough](0)
     val job = new HgJob(dts, new HashMap[String,String])
     val clk = new HgClickThrough(dts)
     var clks : RecordSet[HgClickThrough] = null
+    val fetchCols = new ColumnGroup("c.gu_company","c.gu_contact","c.tx_email","c.dt_action","c.pg_atom","j.tl_job","j.gu_job")
     
-    val clicks = dts.openInnerJoinView(job, clk.getTableName+" c", new SimpleImmutableEntry[String,String]("gu_job","gu_job")).asInstanceOf[RelationalView]
+    val clicks = dts.openJoinView(JoinType.INNER, clk, AS(clk.getTableName,"c"), AS(job.getTableName,"j"), new Pair[String,String]("gu_job","gu_job"))
     using (clicks) {
-      val qry = clicks.newQuery
-      qry.setResultClass(clk.getClass, dts.getClass)
-      qry.setResult("c.gu_company,c.gu_contact,c.tx_email,c.dt_action,c.pg_atom,j.tl_job,j.gu_job")
-      val where = qry.newPredicate(Connective.AND)
-      where.add("j.gu_workarea", Operator.EQ, getWorkarea)
-      where.add("c.gu_url", Operator.EQ, getGuid)
-      clks = clicks.fetch(qry)
+      clks = clicks.fetch(fetchCols, Integer.MAX_VALUE, 0, new Param("j.gu_workarea", 1, getWorkarea), new Param("c.gu_url", 2, getGuid))
     }
-    asScalaBuffer(clks).toArray[ClickThrough]
+    val clt = new Array[ClickThrough](clks.size)
+    clks.toArray(clt)
+    clt
   }
 
   @throws(classOf[JDOUserException])

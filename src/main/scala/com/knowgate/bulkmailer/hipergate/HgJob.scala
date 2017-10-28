@@ -28,6 +28,8 @@ import org.judal.storage.table.RecordSet
 import org.judal.storage.table.ColumnGroup
 import org.judal.storage.DataSource
 import org.judal.storage.table.TableDataSource
+import org.judal.storage.scala.IndexableTableOperation
+
 import org.judal.metadata.ColumnDef
 
 import org.judal.jdbc.JDBCRelationalTable
@@ -62,7 +64,8 @@ import scala.collection.mutable.Buffer
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.JavaConverters._
 import scala.collection.JavaConversions.asScalaBuffer
-
+import scala.collection.JavaConversions._
+ 
 class HgJob(var dataSource: TableDataSource, props: Map[String,String], jid: String = Uid.createUniqueKey()) extends ArrayRecord(dataSource,"k_jobs") with Job {
   
   def this (dataSource: TableDataSource, propsMap: java.util.Map[String,String], jid: String) {
@@ -88,9 +91,9 @@ class HgJob(var dataSource: TableDataSource, props: Map[String,String], jid: Str
     using(tbl) {
       val adHocMailingList = new HgAdHocMailingList(dataSource)
       val mailings : RecordSet[ArrayRecord] = tbl.fetch(adHocMailingList.fetchGroup(), "gu_mailing",getString("gu_job_group"))
-      val pagesets : RecordSet[ArrayRecord] = tbl.fetch(adHocMailingList.fetchGroup(), "gu_pageset",getString("gu_job_group"))
-      asScalaBuffer(mailings).foreach(l => targetlists+= l.getString("gu_list"))
-      asScalaBuffer(pagesets).foreach(l => targetlists+= l.getString("gu_list"))
+      val pagesets : RecordSet[ArrayRecord] = tbl.fetch(adHocMailingList.fetchGroup(), "gu_pageset",getString("gu_job_group"))      
+      mailings.foreach(l => targetlists+= l.getString("gu_list"))
+      pagesets.foreach(l => targetlists+= l.getString("gu_list"))
     }
   }
   
@@ -112,7 +115,6 @@ class HgJob(var dataSource: TableDataSource, props: Map[String,String], jid: Str
     var meter : Chronometer = null
     if (Profiler.enabled) meter = new Chronometer()
   	if (atms==null) {
-      var bfr: Buffer[SingleEmailAtom] = null
       var tbl: Table = null
       var rst: RecordSet[SingleEmailAtom] = null;
       using(tbl) {
@@ -120,8 +122,13 @@ class HgJob(var dataSource: TableDataSource, props: Map[String,String], jid: Str
         tbl = dataSource.openTable(eMailAtom)
         rst = tbl.fetch(eMailAtom.fetchGroup(), "gu_job", jid)
         rst.sort("pg_atom")
-        bfr = asScalaBuffer(rst).map(rec => new HgSingleEmailAtom(dataSource, this, rec))
-        atms = bfr.toArray
+        atms = new Array[SingleEmailAtom](rst.size)
+        var i = 0
+        val iter = rst.iterator
+        while (iter.hasNext()) {
+          atms(i) = new HgSingleEmailAtom(dataSource, this, iter.next)
+          i += 1
+        }
       }
       if (Profiler.enabled) Profiler.totalAtomsRetrievalTime += meter.stop  	      
     }
@@ -152,19 +159,18 @@ class HgJob(var dataSource: TableDataSource, props: Map[String,String], jid: Str
 
   @throws(classOf[JDOException])
   def atomCount : Int = {
-    var tbl: Table = null
+    var opAtom: IndexableTableOperation[HgSingleEmailAtom] = null
+    var opArch: IndexableTableOperation[HgArchivedEmailMessage] = null
     var cnt = 0
-    using(tbl) {
+    using (opAtom) {
       val jobAtoms = new HgSingleEmailAtom(dataSource, this, RecipientType.TO, "HTML", status())
-      tbl = dataSource.openTable(jobAtoms)
-      cnt = tbl.count("gu_job", id)
-      tbl.close()
-      tbl = null;
+      opAtom = new IndexableTableOperation[HgSingleEmailAtom](dataSource, jobAtoms)
+      cnt = opAtom.count("gu_job", id).toInt
+    }
+    using (opArch) {
       val archivedAtoms = new HgArchivedEmailMessage(dataSource)
-      tbl = dataSource.openTable(archivedAtoms)
-      cnt += tbl.count("gu_job", id)
-      tbl.close()
-      tbl = null
+      opArch = new IndexableTableOperation[HgArchivedEmailMessage](dataSource, archivedAtoms)
+      cnt += opArch.count("gu_job", id).toInt
     }
     cnt
   }

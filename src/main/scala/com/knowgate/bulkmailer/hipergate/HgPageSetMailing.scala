@@ -15,6 +15,7 @@ import org.judal.storage.table.Record
 import org.judal.storage.table.RecordSet
 import org.judal.storage.table.TableDataSource
 import org.judal.storage.scala.ArrayRecord
+import org.judal.storage.scala.IndexableTableOperation
 
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.Buffer
@@ -45,20 +46,16 @@ class HgPageSetMailing(dts: TableDataSource) extends ArrayRecord(dts,"k_pagesets
    
    @throws(classOf[JDOException])
    def lastExecutionDate() : Date = {
-     var tbl: Table = null
      var led: Date = null
-     using(tbl) {
+     var op = new IndexableTableOperation[HgJob](dts)
+     using(op) {
        val job = new ArrayRecord(dts, "k_jobs")
-       tbl = dts.openTable(job)
-       val jobs : RecordSet[Record] = tbl.fetch(job.fetchGroup(), "gu_job_group", getId())
-       for (rec <- asScalaBuffer(jobs))
+       for (rec <- op.fetch(job.fetchGroup(), "gu_job_group", getId()))
          if (!rec.isNull("dt_execution"))
            if (null==led)
              led = rec.getDate("dt_execution")
            else if (rec.getDate("dt_execution").compareTo(led)>0)
              led = rec.getDate("dt_execution")
-       tbl.close
-       tbl=null
      }
      led
    }
@@ -119,19 +116,17 @@ class HgPageSetMailing(dts: TableDataSource) extends ArrayRecord(dts,"k_pagesets
    
    @throws(classOf[JDOException])
    def jobs() : Array[Job] = {
-     var tbl: Table = null
-     var rst: Buffer[Job] = null
+     var rst: Array[Job] = null
      val now = new Date()
      val prp = new HashMap[String,String]
-     using(tbl) {
+     var op = new IndexableTableOperation[HgJob](dts)
+     using(op) {
        val job = new ArrayRecord(dts, "k_jobs")
-       tbl = dts.openTable(job)
-       val jobs : RecordSet[Record] = tbl.fetch(job.fetchGroup(), "gu_job_group", getId)
-       rst = asScalaBuffer(jobs).map(j => new HgJob(dts, prp, j.asInstanceOf[Record]))
-       tbl.close()
-       tbl = null
+       val jobs = op.fetch(job.fetchGroup(), "gu_job_group", getId)
+       rst = new Array[Job](jobs.size)
+       jobs.copyToArray(rst)
      }
-     rst.toArray
+     rst.map(j => new HgJob(dts, prp, j.asInstanceOf[Record]))
    }
 
    @throws(classOf[JDOException])

@@ -12,13 +12,16 @@ import org.judal.storage.table.Table
 import org.judal.storage.table.Record
 import org.judal.storage.table.TableDataSource
 import org.judal.storage.table.RecordSet
+
 import org.judal.storage.scala.ArrayRecord
+import org.judal.storage.scala.IndexableTableOperation
 
 import com.knowgate.bulkmailer.WebBeacon
 import com.knowgate.bulkmailer.MailingList
 import com.knowgate.bulkmailer.ClickThrough
 import com.knowgate.bulkmailer.RecipientData
 import com.knowgate.bulkmailer.ArchivedEmailMessage
+import com.knowgate.bulkmailer.Using._
 
 import scala.collection.mutable.Map
 import scala.collection.mutable.Buffer
@@ -70,19 +73,16 @@ class HgRecipientData(dts: TableDataSource, workarea: String, mail: String) exte
 
   @throws(classOf[JDOException])
   def isBlackListed() : Boolean = {
-    var tbl: Table = null
-    try {
-      val ble = new HgBlackListedEmail(dts)
-      tbl = dts.openTable(ble)
-      var rst : RecordSet[HgBlackListedEmail] = tbl.fetch(ble.fetchGroup, "tx_email", email)
-      tbl.close()
-      tbl = null
-      asScalaBuffer(rst).exists {  r => matchesWorkarea(r.getString("gu_workarea"), workarea) }
-    } finally {
-      if (tbl!=null) tbl.close
-    } 
+    var blackListed = false
+    val ble = new HgBlackListedEmail(dts)
+    var op = new IndexableTableOperation[HgBlackListedEmail](dts,ble)
+    using(op) {
+      val rst = op.fetch(ble.fetchGroup, "tx_email", email)
+      blackListed = rst.exists {  r => matchesWorkarea(r.getString("gu_workarea"), workarea) }
+    }
+    blackListed
   }
-  
+
   @throws(classOf[JDOException])
   @throws(classOf[NoSuchElementException])
   private def getWorkareaForJob(jid: String) : String = {
@@ -100,52 +100,37 @@ class HgRecipientData(dts: TableDataSource, workarea: String, mail: String) exte
 
   @throws(classOf[JDOException])
   def messagesSent() : Array[ArchivedEmailMessage] = {
-    var tbl : Table = null
-    var rst : RecordSet[HgArchivedEmailMessage] = null
+    var rst : Iterable[HgArchivedEmailMessage] = null
     var snt : Array[ArchivedEmailMessage] = new Array[ArchivedEmailMessage](0)
-    try {
+    var op = new IndexableTableOperation[HgArchivedEmailMessage](dts)
+    using(op) {
       val arc = new HgArchivedEmailMessage(dts)
-      tbl = dts.openTable(arc)
-      rst = tbl.fetch(arc.fetchGroup, "tx_email", email)
-      tbl.close
-      tbl=null
-    } finally {
-      if (tbl!=null) tbl.close()
-    } 
-    asScalaBuffer(rst).filter(r => (-1!=r.getInt("id_status")) && (4!=r.getInt("id_status")) && (getWorkareaForJob(r.getString("gu_job")).equals(workarea))).toArray[ArchivedEmailMessage]
+      rst = op.fetch(arc.fetchGroup, "tx_email", email).filter(r => (-1!=r.getInt("id_status")) && (4!=r.getInt("id_status")) && (getWorkareaForJob(r.getString("gu_job")).equals(workarea)))
+    }    
+    rst.toArray[ArchivedEmailMessage]
   }
 
   @throws(classOf[JDOException])
   def messagesOpened() : Array[WebBeacon] = {
-    var tbl : Table = null
-    var rst :  RecordSet[HgWebBeacon] = null
-    try {
-      val wb = new HgWebBeacon(dts)
-      tbl = dts.openTable(wb)
-      var rst = tbl.fetch(wb.fetchGroup, "tx_email", email)
-      tbl.close
-      tbl=null
-    } finally {
-      if (tbl!=null) tbl.close()
-    } 
-    asScalaBuffer(rst).filter(r => (-1!=r.getInt("id_status")) && (4!=r.getInt("id_status")) && (getWorkareaForJob(r.getString("gu_job")).equals(workarea))).toArray[WebBeacon]
+    var rst : Iterable[HgWebBeacon] = null
+    val wb = new HgWebBeacon(dts)
+    var op = new IndexableTableOperation[HgWebBeacon](dts, wb)
+    using(op) {
+      var rst = op.fetch(wb.fetchGroup, "tx_email", email)
+    }
+    rst.filter(r => (-1!=r.getInt("id_status")) && (4!=r.getInt("id_status")) && (getWorkareaForJob(r.getString("gu_job")).equals(workarea))).toArray[WebBeacon]
   }
 
   @throws(classOf[JDOException])
   def clickThrough() : Array[ClickThrough] = {
-    var tbl : Table = null
-    var rst :  RecordSet[HgClickThrough] = null
+    var rst : Iterable[HgClickThrough] = null
     var clk : Array[ClickThrough] = new Array[ClickThrough](0)
-    try {
+    var op = new IndexableTableOperation[HgArchivedEmailMessage](dts)
+    using(op) {
       val jac = new HgClickThrough(dts)
-      tbl = dts.openTable(jac)
-      var rst = tbl.fetch(jac.fetchGroup, "tx_email", email)
-      tbl.close
-      tbl=null
-    } finally {
-      if (tbl!=null) tbl.close()
+      var rst = op.fetch(jac.fetchGroup, "tx_email", email).filter(r => getWorkareaForJob(r.getString("gu_job")).equals(workarea))
     } 
-    asScalaBuffer(rst).filter(r => getWorkareaForJob(r.getString("gu_job")).equals(workarea)).toArray[ClickThrough]
+    rst.toArray[ClickThrough]
   }
 
   @throws(classOf[JDOException])
@@ -157,38 +142,33 @@ class HgRecipientData(dts: TableDataSource, workarea: String, mail: String) exte
 
   @throws(classOf[JDOException])
   private def lists(tp: Int) : Array[MailingList] = {
-    var tbl : Table = null
+    val mbr = new HgListMember(dts)
+    var op = new IndexableTableOperation[HgListMember](dts,mbr)
     var mll = new Array[MailingList](0)
     val lsts = new HashMap[String,MailingList]
     if (null==activeMap)
       activeMap = new HashMap[String,Boolean]
-    try {
-      val mbr = new HgListMember(dts)
-      tbl = dts.openTable(mbr)
-      val rst : RecordSet[HgListMember] = tbl.fetch(mbr.fetchGroup, "tx_email", email)
-      tbl.close
-      tbl=null
+    using(op) {
+      val rst = op.fetch(mbr.fetchGroup, "tx_email", email)
       var lst = new HgMailingList(dts)
-      tbl = dts.openTable(lst)
-      for (rec <- rst) {
-        val lid = rec.getListId
-        if (!lsts.contains(lid)) {
-          lst = new HgMailingList(dts)
-          tbl.load(lid, lst)
-          val tpl = rec.getListType
-          if (lst.getWorkarea==workarea && ((tp==tpl || (4!=tp && 4!=tpl)))) {
-            lsts += (lid -> lst)
-            if (!activeMap.contains(lid))
-              activeMap += (lid -> rec.isActive)
+      var tbl : Table = null
+      using(tbl) {
+        tbl = dts.openTable(lst)
+        for (rec <- rst) {
+          val lid = rec.getListId
+          if (!lsts.contains(lid)) {
+            lst = new HgMailingList(dts)
+            tbl.load(lid, lst)
+            val tpl = rec.getListType
+            if (lst.getWorkarea==workarea && ((tp==tpl || (4!=tp && 4!=tpl)))) {
+              lsts += (lid -> lst)
+              if (!activeMap.contains(lid))
+                activeMap += (lid -> rec.isActive)
+            }
           }
         }
       }
-      tbl.close
-      tbl=null
-      println("map count is "+String.valueOf(lsts.size))
-    } finally {
-      if (tbl!=null) tbl.close()
-    } 
+    }
     lsts.values.toArray
   }
 

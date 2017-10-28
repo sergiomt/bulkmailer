@@ -41,7 +41,9 @@ class HgAdHocMailing(dts: TableDataSource) extends ArrayRecord(dts,"k_adhoc_mail
        var tbl = dts.openTable(job)
        using(tbl) {
          val jobs : RecordSet[HgJob] = tbl.fetch(job.fetchGroup(), "gu_job_group", getId())
-         for (rec <- jobs)
+         val iter = jobs.iterator
+         while (iter.hasNext)
+           rec = iter.next
            if (!rec.isNull("dt_execution"))
              if (null==led)
                led = rec.getDate("dt_execution")
@@ -127,13 +129,16 @@ class HgAdHocMailing(dts: TableDataSource) extends ArrayRecord(dts,"k_adhoc_mail
      var rst: Buffer[Job] = null
      val now = new Date()
      val prp = new HashMap[String,String]
+     var jbs : Array[Job] = null
      using(tbl) {
        val job = new HgJob(dts, new HashMap[String,String])
        tbl = dts.openTable(job)
-       val jobRecs : RecordSet[HgJob] = tbl.fetch(job.fetchGroup, "gu_job_group", getId) 
-       rst = asScalaBuffer(jobRecs).map(j => new HgJob(dts, prp, j.asInstanceOf[Record]))
-       tbl.close()
-       tbl = null
+       val jobRecs : RecordSet[HgJob] = tbl.fetch(job.fetchGroup, "gu_job_group", getId)       
+       jbs = new Array[Job](jobRecs.size)
+       var j = 0
+       val iter = jobRecs.iterator
+       while (iter.hasNext)
+         jbs(j) = new HgJob(dts, prp, iter.next.asInstanceOf[Record])
      }
      rst.toArray
    }

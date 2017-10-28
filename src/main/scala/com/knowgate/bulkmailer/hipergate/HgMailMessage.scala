@@ -28,6 +28,7 @@ import org.judal.storage.table.Record
 import org.judal.storage.table.RecordSet
 import org.judal.storage.table.TableDataSource
 import org.judal.storage.scala.ArrayRecord
+import org.judal.storage.scala.IndexableTableOperation
 
 import org.judal.jdbc.JDBCDataSource
 
@@ -137,12 +138,10 @@ class HgMailMessage(dts: TableDataSource, val workarea: String = "00000000000000
     var retval = super.load(dts, guid)
     parts = new LinkedList[MailPart]
     if (retval) {
-      var t: Table = null
-      using(t) {
+      var op = new IndexableTableOperation[HgMailPart](dts)
+      using(op) {
         val part = new HgMailPart(dts,this)
-        t = dts.openTable(part)
-        val parts : RecordSet[Record] = t.fetch(part.fetchGroup(), "gu_mimemsg", getGuid)
-        asScalaBuffer(parts).foreach(r => parts.add(new HgMailPart(dts,this,r.getInteger("id_part"))))
+        op.fetch(part.fetchGroup(), "gu_mimemsg", getGuid).foreach { r => parts.add(new HgMailPart(dts,this,r.getInteger("id_part"))) }
       }
     } else {
     	parts = new LinkedList[MailPart]

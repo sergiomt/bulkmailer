@@ -12,6 +12,8 @@ import java.sql.PreparedStatement
 
 import javax.jdo.JDOException
 
+import com.knowgate.tuples.Pair
+
 import com.knowgate.bulkmailer.Log
 import com.knowgate.bulkmailer.Job
 import com.knowgate.bulkmailer.Jobs
@@ -22,6 +24,9 @@ import com.knowgate.bulkmailer.EmailMessagesByDay
 import com.knowgate.bulkmailer.EmailMessagesByHour
 import com.knowgate.bulkmailer.EmailMessagesByAgent
 
+import org.judal.metadata.JoinType
+import org.judal.metadata.NameAlias.AS
+
 import org.judal.storage.table.Table
 import org.judal.storage.table.IndexableView
 import org.judal.storage.table.Record
@@ -30,13 +35,12 @@ import org.judal.storage.StorageObjectFactory
 import org.judal.storage.relational.RelationalView
 import org.judal.storage.relational.RelationalDataSource
 import org.judal.storage.scala.ArrayRecord
-
+import org.judal.storage.scala.IndexableTableOperation
+import org.judal.storage.scala.RelationalQuery
 import org.judal.storage.table.ColumnGroup
-
 import org.judal.storage.query.Term
 import org.judal.storage.query.Operator
 import org.judal.storage.query.Connective
-
 import org.judal.storage.query.sql.SQLTerm
 
 import scala.collection.mutable.Map
@@ -56,9 +60,9 @@ class HgJobs(dts: RelationalDataSource, props: Map[String,String]) extends Jobs 
       
       val job = new HgJob(dts, props)
 
-      var tbl = dts.openTable(job)
-      using(tbl) {
-        val rst : RecordSet[HgJob] = tbl.fetch(job.fetchGroup(), "id_status", String.valueOf(PENDING.shortValue))
+      var op = new IndexableTableOperation(dts, job)
+      using(op) {
+        val rst  = op.fetch(job.fetchGroup(), "id_status", String.valueOf(PENDING.shortValue))
         for (rec <- rst)
           rec.parameters = props
       }
@@ -87,15 +91,17 @@ class HgJobs(dts: RelationalDataSource, props: Map[String,String]) extends Jobs 
 
     @throws(classOf[JDOException])
     def group(groupId: String) : Array[Job] = {
-      var rst: RecordSet[HgJob] = null
       val job = new HgJob(dts, props)
-      var tbl = dts.openTable(job)
-      using(tbl) {
-        rst = tbl.fetch(job.fetchGroup(), "gu_job_group", groupId)
+      var op = new IndexableTableOperation[HgJob](dts, job)
+      var rst : Iterable[HgJob] = null
+      using(op) {
+        rst = op.fetch(job.fetchGroup(), "gu_job_group", groupId)
         for (rec <- rst)
           rec.parameters = props
       }
-      rst.toArray(new Array[Job](rst.size()))
+      val retval = new Array[Job](rst.size)
+      rst.copyToArray(retval)
+      retval
     }
 
     @throws(classOf[JDOException])
@@ -103,13 +109,10 @@ class HgJobs(dts: RelationalDataSource, props: Map[String,String]) extends Jobs 
         val key = workarea+from+to
         var rst: RecordSet[HgJob] = null
         val job = new HgJob(dts, props)
-        var tbl = dts.openRelationalView(job)
-        using(tbl) {
-          val qry = tbl.newQuery()
-          qry.setResultClass(job.getClass, dts.getClass, props.getClass)
-          qry.setFilter(qry.newPredicate(Connective.AND).add("dt_execution", Operator.BETWEEN, Array[Date](from,to)).add("gu_workarea", Operator.EQ, workarea));
-          rst = tbl.fetch(qry)
-          for (rec <- rst)
+        var op = new RelationalQuery(dts, classOf[HgJob])
+        using(op) {
+          op.and("dt_execution", Operator.BETWEEN, Array[Date](from,to)).and("gu_workarea", Operator.EQ, workarea)
+          for (rec <- op.fetch)
             rec.parameters = props
         }
         rst.toArray(new Array[Job](rst.size))
@@ -223,7 +226,7 @@ class HgJobs(dts: RelationalDataSource, props: Map[String,String]) extends Jobs 
     val j = job.getTableName
     val d = abd.getTableName
 
-    val atomsbyday = dts.openInnerJoinView(job, d, new SimpleImmutableEntry[String,String]("gu_job","gu_job")).asInstanceOf[RelationalView]
+    val atomsbyday = dts.openJoinView(JoinType.INNER, job, AS(j,"j"), AS(d,"d"), new Pair("gu_job","gu_job"))
     using (atomsbyday) {
       
       val qry = atomsbyday.newQuery
@@ -256,7 +259,7 @@ class HgJobs(dts: RelationalDataSource, props: Map[String,String]) extends Jobs 
     val j = job.getTableName
     val h = abh.getTableName
         
-    val atomsbyhour = dts.openInnerJoinView(job, h, new SimpleImmutableEntry[String,String]("gu_job","gu_job")).asInstanceOf[RelationalView]
+    val atomsbyhour = dts.openJoinView(JoinType.INNER, job, AS(j,"j"), AS(h,"h"), new Pair("gu_job","gu_job"))
     using(atomsbyhour) {
       val qry = atomsbyhour.newQuery
       qry.setResult("SUM(h.nu_msgs) AS message_count,h.dt_hour AS hour")
@@ -287,8 +290,8 @@ class HgJobs(dts: RelationalDataSource, props: Map[String,String]) extends Jobs 
     val j = job.getTableName
     val h = aba.getTableName
 
-    val atomsbyagent = dts.openInnerJoinView(job, h, new SimpleImmutableEntry[String,String]("gu_job","gu_job")).asInstanceOf[RelationalView]
-    
+    val atomsbyagent = dts.openJoinView(JoinType.INNER, job, AS(j,"j"), AS(h,"h"), new Pair("gu_job","gu_job"))
+
     using (atomsbyagent) {
       val qry = atomsbyagent.newQuery
       qry.setResult("a.id_agent AS id_agent,SUM(a.nu_msgs) AS nu_msgs")
