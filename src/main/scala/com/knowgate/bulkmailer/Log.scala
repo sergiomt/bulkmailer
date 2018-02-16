@@ -12,8 +12,9 @@ package com.knowgate.bulkmailer
  * KIND, either express or implied.
  */
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.Logger
+import org.apache.logging.log4j.LogManager
 
 object Log {
-  val out = Logger.getLogger(Log.getClass())
+  val out = LogManager.getLogger(Log.getClass())
 }
