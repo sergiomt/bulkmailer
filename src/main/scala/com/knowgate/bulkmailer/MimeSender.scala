@@ -38,6 +38,7 @@ import org.judal.storage.table.Record
 import org.judal.storage.DataSource
 
 import com.knowgate.stringutils.Uid
+import com.knowgate.mail.MailSessionHandler
 import com.knowgate.xhtml.FastStreamReplacer
 
 import scala.collection.mutable.Map
