@@ -24,7 +24,7 @@ import com.knowgate.bulkmailer.Using._
 
 class WorkArea(dts: TableDataSource) extends ArrayRecord(dts, "k_workareas") {
 
-  val tableName = "k_workareas";
+  override def getTableName() = "k_workareas"
   
 	def getId() : String = getString("gu_workarea")
 
